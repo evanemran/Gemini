@@ -17,6 +17,7 @@ import com.evanemran.gemini.databinding.ActivityMainBinding
 import com.evanemran.gemini.model.MessageModel
 import com.evanemran.gemini.utils.CustomTypefaceSpan
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -63,6 +64,13 @@ class MainActivity : AppCompatActivity() {
         adapter = MessageListAdapter(this, messageList)
         binding.chatList.adapter = adapter
 
+        val chat = generativeModel.startChat(
+            history = listOf(
+                content(role = "user") { text("Hello, I am Evan. I am a software engineer") },
+                content(role = "model") { text("Great to meet you. What would you like to know?") }
+            )
+        )
+
         binding.run.setOnClickListener {
             val prompt = binding.commandLine.text.toString()
             if(prompt.isNotEmpty()) {
@@ -72,7 +80,11 @@ class MainActivity : AppCompatActivity() {
                 binding.progressbar.visibility = View.VISIBLE
                 binding.run.visibility = View.GONE
                 lifecycleScope.launch {
-                    val response = generativeModel.generateContent(prompt)
+
+                    chat.sendMessage(prompt)
+                    val response = chat.sendMessage(prompt)
+
+                    //val response = generativeModel.generateContent(prompt)
                     print(response.text)
                     messageList.add(MessageModel(response.text.toString(), "NA", true))
                     binding.progressbar.visibility = View.GONE
