@@ -42,6 +42,7 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
@@ -59,14 +60,18 @@
             android:textColorHint="@color/grey"
             android:textSize="16sp"
             android:drawableTint="@color/black"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
             android:layout_weight="1"/>
+        <View
+            android:layout_width="10dp"
+            android:layout_height="50dp"/>
         <ImageButton
             android:id="@+id/run"
-            android:backgroundTint="@color/black"
+            android:background="@drawable/circular_image_button"
             android:src="@drawable/ic_send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:tint="@color/white" />
     </LinearLayout>
 
 

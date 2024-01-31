@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="end"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/command_item_container"
-    android:background="@drawable/custom_card_background_grey"
-    android:layout_marginStart="50dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    android:layout_marginEnd="8dp"
-    android:orientation="vertical">
-    <TextView
-        android:id="@+id/textView_message"
-        android:text="sudo apt"
-        android:textAlignment="textEnd"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        android:padding="16dp"
-        android:fontFamily="@font/custom_font_medium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="end"
+    android:orientation="horizontal">
+    <LinearLayout
+        android:background="@drawable/custom_card_background_grey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        >
+        <TextView
+            android:id="@+id/textView_message"
+            android:text="sudo apt"
+            android:textAlignment="textEnd"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:padding="16dp"
+            android:fontFamily="@font/custom_font_medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 </LinearLayout>

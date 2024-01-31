@@ -65,18 +65,20 @@ class MainActivity : AppCompatActivity() {
 
         binding.run.setOnClickListener {
             val prompt = binding.commandLine.text.toString()
-            messageList.add(MessageModel(prompt, "NA", false))
-            adapter!!.notifyDataSetChanged()
-            binding.progressbar.visibility = View.VISIBLE
-            binding.run.visibility = View.GONE
-            lifecycleScope.launch {
-                val response = generativeModel.generateContent(prompt)
-                print(response.text)
-                messageList.add(MessageModel(response.text.toString(), "NA", true))
-                binding.progressbar.visibility = View.GONE
-                binding.run.visibility = View.VISIBLE
+            if(prompt.isNotEmpty()) {
                 binding.commandLine.setText("")
+                messageList.add(MessageModel(prompt, "NA", false))
                 adapter!!.notifyDataSetChanged()
+                binding.progressbar.visibility = View.VISIBLE
+                binding.run.visibility = View.GONE
+                lifecycleScope.launch {
+                    val response = generativeModel.generateContent(prompt)
+                    print(response.text)
+                    messageList.add(MessageModel(response.text.toString(), "NA", true))
+                    binding.progressbar.visibility = View.GONE
+                    binding.run.visibility = View.VISIBLE
+                    adapter!!.notifyDataSetChanged()
+                }
             }
         }
     }

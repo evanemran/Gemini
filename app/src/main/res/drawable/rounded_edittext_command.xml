@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/black" /> <!-- Background color (white in this example) -->
-    <corners android:radius="0dp" /> <!-- Radius defines the corner roundness -->
+    <corners android:radius="20dp" /> <!-- Radius defines the corner roundness -->
     <stroke
         android:color="@color/primary"
         android:width="2dp" /> <!-- Border width (optional) -->
