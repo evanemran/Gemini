@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -51,6 +52,10 @@ class MessageListAdapter(private val context: Context, private val list: List<Me
             OWN_VIEW -> {
                 holder as OwnMessageViewHolder
                 holder.textViewCommand.text = item.message
+                if(item.isImagePrompt) {
+                    holder.imageViewPrompt.visibility = View.VISIBLE
+                    holder.imageViewPrompt.setImageBitmap(item.image)
+                }
             }
             REPLY_VIEW -> {
                 holder as ReplyMessageViewHolder
@@ -63,6 +68,7 @@ class MessageListAdapter(private val context: Context, private val list: List<Me
 
 class OwnMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var textViewCommand: TextView = itemView.findViewById(R.id.textView_message)
+    var imageViewPrompt: ImageView = itemView.findViewById(R.id.imageView_prompt)
     var commandContainer: LinearLayout = itemView.findViewById(R.id.command_item_container)
 }
 
