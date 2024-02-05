@@ -10,9 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.evanemran.gemini.R
+import com.evanemran.gemini.config.ChatType
 import com.evanemran.gemini.model.MessageModel
 
-class MessageListAdapter(private val context: Context, private val list: List<MessageModel>)
+class MessageListAdapter(private val context: Context, private val list: List<MessageModel>, private val type: ChatType)
     : RecyclerView.Adapter<RecyclerView.ViewHolder> (){
 
     private val OWN_VIEW = 1
@@ -29,12 +30,24 @@ class MessageListAdapter(private val context: Context, private val list: List<Me
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             OWN_VIEW -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.list_message, parent, false)
-                OwnMessageViewHolder(view)
+                if(type==ChatType.TEXT) {
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.list_message, parent, false)
+                    OwnMessageViewHolder(view)
+                }
+                else {
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.list_voice_message, parent, false)
+                    OwnMessageViewHolder(view)
+                }
             }
             REPLY_VIEW -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.list_reply, parent, false)
-                ReplyMessageViewHolder(view)
+                if(type==ChatType.TEXT) {
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.list_reply, parent, false)
+                    ReplyMessageViewHolder(view)
+                }
+                else {
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.list_voice_reply, parent, false)
+                    ReplyMessageViewHolder(view)
+                }
             }
 
             else -> throw IllegalArgumentException("Invalid view type")

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.evanemran.gemini.adapters.MessageListAdapter
 import com.evanemran.gemini.config.BuildConfig
+import com.evanemran.gemini.config.ChatType
 import com.evanemran.gemini.databinding.ActivityMainBinding
 import com.evanemran.gemini.model.MessageModel
 import com.evanemran.gemini.utils.BitmapUtils
@@ -81,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.chatList.setHasFixedSize(true)
         binding.chatList.layoutManager = StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL)
-        adapter = MessageListAdapter(this, messageList)
+        adapter = MessageListAdapter(this, messageList, ChatType.TEXT)
         binding.chatList.adapter = adapter
 
         val chat = generativeModel.startChat(
