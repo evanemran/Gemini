@@ -9,18 +9,35 @@ import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 
 class GeminiPromptManager(private val activity: Context, private val responseListener: GeminiResponseListener) {
+
+    val apiKeyManager = ApiKeyManager(activity)
+
     private val generativeModel = GenerativeModel(
         // Use a model that's applicable for your use case (see "Implement basic use cases" below)
         modelName = "gemini-pro",
         // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-        apiKey = BuildConfig.apiKey
+        apiKey = apiKeyManager.apiKey.let {
+            if(it.isNullOrEmpty()) {
+                return@let ""
+            }
+            else {
+                return@let it
+            }
+        }
     )
 
     private val generativeImageModel = GenerativeModel(
         // For text-and-images input (multimodal), use the gemini-pro-vision model
         modelName = "gemini-pro-vision",
         // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-        apiKey = BuildConfig.apiKey
+        apiKey = apiKeyManager.apiKey.let {
+            if(it.isNullOrEmpty()) {
+                return@let ""
+            }
+            else {
+                return@let it
+            }
+        }
     )
 
     private val chat = generativeModel.startChat(

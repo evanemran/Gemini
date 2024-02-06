@@ -10,7 +10,7 @@
     android:padding="8dp"
     android:orientation="horizontal"
     android:id="@+id/drawer_container"
-    android:background="@drawable/custom_drawer_menu_background">
+    android:background="@color/black">
 
     <ImageView
         android:src="@mipmap/ic_launcher_round"

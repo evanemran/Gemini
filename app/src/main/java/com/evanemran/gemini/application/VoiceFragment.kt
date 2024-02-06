@@ -51,7 +51,7 @@ class VoiceFragment: Fragment() {
         PermissionUtils.requestPermission(
             requireActivity(),
             PermissionUtils.PERMISSION_RECORD_AUDIO,
-            "This app needs access to mic to read your voice."
+            "This App Needs Access to Mic to Read Your Voice."
         ) { // Callback when permission is granted
 
             speechToTextConverter = SpeechToTextConverter(requireActivity())

@@ -37,10 +37,9 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private val REQUEST_IMAGE_CAPTURE = 1
-    private val REQUEST_IMAGE_PICK = 2
     private lateinit var binding: ActivityMainBinding
-    private var selectedFragment: Fragment = TextFragment()
+    private lateinit var drawerAdapter: DrawerAdapter
+    private var selectedDrawerMenu: DrawerMenu = DrawerMenu.TEXT
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        replaceFragment(selectedFragment)
+        replaceFragment(selectedDrawerMenu.fragment)
 
         setSupportActionBar(binding.toolbar)
         val customTypeface: Typeface? =
@@ -85,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.recyclerNav.setHasFixedSize(true)
         binding.recyclerNav.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        val drawerAdapter = DrawerAdapter(this, navMenus, drawerClickListener)
+        drawerAdapter = DrawerAdapter(this, navMenus, drawerClickListener, selectedDrawerMenu)
         binding.recyclerNav.adapter = drawerAdapter
     }
 
@@ -96,33 +95,30 @@ class MainActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
-    private fun dispatchPickImageIntent() {
-        val pickIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(pickIntent, REQUEST_IMAGE_PICK)
-    }
-
     private val drawerClickListener: ClickListener<DrawerMenu> = object : ClickListener<DrawerMenu>{
         override fun onClicked(data: DrawerMenu) {
             when (data) {
                 DrawerMenu.TEXT -> {
-                    if (selectedFragment !is TextFragment){
-                        selectedFragment = TextFragment()
+                    if (selectedDrawerMenu.fragment !is TextFragment){
+                        selectedDrawerMenu = DrawerMenu.TEXT
                         replaceFragment(TextFragment())
                     }
                 }
                 DrawerMenu.VOICE -> {
-                    if (selectedFragment !is VoiceFragment){
-                        selectedFragment = VoiceFragment()
+                    if (selectedDrawerMenu.fragment !is VoiceFragment){
+                        selectedDrawerMenu = DrawerMenu.VOICE
                         replaceFragment(VoiceFragment())
                     }
                 }
                 DrawerMenu.API_KEY -> {
-                    if (selectedFragment !is VoiceFragment){
-                        selectedFragment = VoiceFragment()
-                        replaceFragment(VoiceFragment())
+                    if (selectedDrawerMenu.fragment !is SettingsFragment){
+                        selectedDrawerMenu = DrawerMenu.API_KEY
+                        replaceFragment(SettingsFragment())
                     }
                 }
             }
+
+            drawerAdapter.notifyDataSetChanged()
 
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }

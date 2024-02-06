@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/black">
+
+    <EditText
+        android:id="@+id/apiKey_field"
+        android:fontFamily="@font/custom_font_medium"
+        android:layout_width="match_parent"
+        android:textColor="@color/white"
+        android:background="@drawable/rounded_edittext_command"
+        android:inputType="text"
+        android:hint="@string/enter_api_key"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:textColorHint="@color/grey"
+        android:textSize="16sp"
+        android:drawableTint="@color/grey"
+        android:drawablePadding="4dp"
+        android:layout_height="50dp"/>
+
+    <Button
+        android:id="@+id/button_save"
+        android:text="Save"
+        android:fontFamily="@font/custom_font_bold"
+        android:textColor="@color/white"
+        android:layout_marginTop="16dp"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

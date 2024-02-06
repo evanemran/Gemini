@@ -12,7 +12,7 @@ import com.evanemran.gemini.R
 import com.evanemran.gemini.listeners.ClickListener
 import com.evanemran.gemini.model.DrawerMenu
 
-class DrawerAdapter (private val context: Context, private val list: List<DrawerMenu>, private val listener: ClickListener<DrawerMenu>)
+class DrawerAdapter (private val context: Context, private val list: List<DrawerMenu>, private val listener: ClickListener<DrawerMenu>, private val selectedNavMenu: DrawerMenu)
     : RecyclerView.Adapter<DrawerViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrawerViewHolder {
         val layout = LayoutInflater.from(context).inflate(R.layout.list_drawer, parent, false)
@@ -25,9 +25,22 @@ class DrawerAdapter (private val context: Context, private val list: List<Drawer
         holder.textView_title.text = item.title
         holder.textView_subTitle.text = item.subTitle
 
+        if(selectedNavMenu==item) {
+            holder.drawer_container.setBackgroundColor(context.getColor(R.color.primary))
+        }
+        else {
+            holder.drawer_container.setBackgroundColor(context.getColor(R.color.black))
+        }
+
 
         holder.drawer_container.setOnClickListener {
-            listener.onClicked(item)
+            if(selectedNavMenu==item) {
+                holder.drawer_container.setBackgroundColor(context.getColor(R.color.primary))
+            }
+            else {
+                holder.drawer_container.setBackgroundColor(context.getColor(R.color.black))
+                listener.onClicked(item)
+            }
         }
     }
 
