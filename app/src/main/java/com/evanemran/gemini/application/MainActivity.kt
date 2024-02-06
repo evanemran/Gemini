@@ -12,16 +12,23 @@ import android.text.SpannableString
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.evanemran.gemini.R
+import com.evanemran.gemini.adapters.DrawerAdapter
 import com.evanemran.gemini.adapters.MessageListAdapter
 import com.evanemran.gemini.config.ChatType
 import com.evanemran.gemini.databinding.ActivityMainBinding
+import com.evanemran.gemini.listeners.ClickListener
 import com.evanemran.gemini.listeners.GeminiResponseListener
+import com.evanemran.gemini.model.DrawerMenu
 import com.evanemran.gemini.model.MessageModel
 import com.evanemran.gemini.utils.BitmapUtils
 import com.evanemran.gemini.utils.CustomTypefaceSpan
@@ -33,11 +40,7 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_IMAGE_CAPTURE = 1
     private val REQUEST_IMAGE_PICK = 2
     private lateinit var binding: ActivityMainBinding
-    private lateinit var geminiPromptManager: GeminiPromptManager
-    private var adapter: MessageListAdapter? = null
-    var messageList: MutableList<MessageModel> = mutableListOf()
-
-    private var selectedImageBitmap: Bitmap? = null
+    private var selectedFragment: Fragment = TextFragment()
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        geminiPromptManager = GeminiPromptManager(this, geminiResponseListener)
+        replaceFragment(selectedFragment)
 
         setSupportActionBar(binding.toolbar)
         val customTypeface: Typeface? =
@@ -64,54 +67,33 @@ class MainActivity : AppCompatActivity() {
 
             supportActionBar?.title = spannableString
         }
-        messageList.add(MessageModel("Hi! I am Gemini, How may I assist you?", "NA", mIsReply = false, mIsImagePrompt = false, null))
 
-        binding.chatList.setHasFixedSize(true)
-        binding.chatList.layoutManager = StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL)
-        adapter = MessageListAdapter(this, messageList, ChatType.TEXT)
-        binding.chatList.adapter = adapter
+        val toggle = ActionBarDrawerToggle(
+            this, binding.drawerLayout, binding.toolbar, R.string.open_nav_drawer, R.string.close_nav_drawer
+        )
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
 
-        binding.commandLine.setOnTouchListener(OnTouchListener { _, event ->
-            val DRAWABLE_RIGHT = 2
-            if (event.action == MotionEvent.ACTION_UP) {
-                if (event.rawX >= binding.commandLine.right - binding.commandLine.compoundDrawables[DRAWABLE_RIGHT].bounds.width()
-                ) {
-                    dispatchPickImageIntent()
-                    return@OnTouchListener true
-                }
-            }
-            false
-        })
+        setupNavMenu()
+    }
 
-        binding.run.setOnClickListener {
-            val prompt = binding.commandLine.text.toString()
-            if(prompt.isNotEmpty()) {
-                binding.commandLine.setText("")
-                binding.progressbar.visibility = View.VISIBLE
-                binding.run.visibility = View.GONE
-                lifecycleScope.launch {
+    private fun setupNavMenu() {
+        val navMenus: MutableList<DrawerMenu> = mutableListOf()
+        navMenus.add(DrawerMenu.TEXT)
+        navMenus.add(DrawerMenu.VOICE)
+        navMenus.add(DrawerMenu.API_KEY)
 
-                    if(selectedImageBitmap!=null) {
-                        if(prompt.isNotEmpty()) {
-                            binding.pickedImageView.visibility = View.GONE
-                            messageList.add(MessageModel(prompt, "NA", mIsReply = false, mIsImagePrompt = true, selectedImageBitmap!!))
-                            geminiPromptManager.askWithImage(prompt, selectedImageBitmap!!)
-                        }
-                        else {
-                            binding.commandLine.error = "Enter Prompt."
-                        }
-                    }
-                    else {
-                        messageList.add(MessageModel(prompt, "NA", mIsReply = false, mIsImagePrompt = false, null))
-                        geminiPromptManager.askWithText(prompt)
-                    }
+        binding.recyclerNav.setHasFixedSize(true)
+        binding.recyclerNav.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        val drawerAdapter = DrawerAdapter(this, navMenus, drawerClickListener)
+        binding.recyclerNav.adapter = drawerAdapter
+    }
 
-                    binding.progressbar.visibility = View.GONE
-                    binding.run.visibility = View.VISIBLE
-                    adapter!!.notifyDataSetChanged()
-                }
-            }
-        }
+    private fun replaceFragment(fragment: Fragment) {
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.fragment_container, fragment)
+        fragmentTransaction.commit()
     }
 
     private fun dispatchPickImageIntent() {
@@ -119,33 +101,30 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(pickIntent, REQUEST_IMAGE_PICK)
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_IMAGE_CAPTURE -> {
-                    binding.pickedImageView.visibility = View.VISIBLE
-                    val imageBitmap = data?.extras?.get("data") as Bitmap
-                    binding.pickedImageView.setImageBitmap(imageBitmap)
-                    selectedImageBitmap = imageBitmap
+    private val drawerClickListener: ClickListener<DrawerMenu> = object : ClickListener<DrawerMenu>{
+        override fun onClicked(data: DrawerMenu) {
+            when (data) {
+                DrawerMenu.TEXT -> {
+                    if (selectedFragment !is TextFragment){
+                        selectedFragment = TextFragment()
+                        replaceFragment(TextFragment())
+                    }
                 }
-                REQUEST_IMAGE_PICK -> {
-                    binding.pickedImageView.visibility = View.VISIBLE
-                    val imageUri = data?.data
-                    val imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-                    binding.pickedImageView.setImageBitmap(imageBitmap)
-                    selectedImageBitmap = BitmapUtils.compressBitmap(imageBitmap)
+                DrawerMenu.VOICE -> {
+                    if (selectedFragment !is VoiceFragment){
+                        selectedFragment = VoiceFragment()
+                        replaceFragment(VoiceFragment())
+                    }
+                }
+                DrawerMenu.API_KEY -> {
+                    if (selectedFragment !is VoiceFragment){
+                        selectedFragment = VoiceFragment()
+                        replaceFragment(VoiceFragment())
+                    }
                 }
             }
-        }
-    }
 
-    private val geminiResponseListener: GeminiResponseListener = object : GeminiResponseListener {
-        override fun onResponse(response: String, isImage: Boolean) {
-            messageList.add(MessageModel(response.trim(), "NA", mIsReply = true, mIsImagePrompt = isImage, selectedImageBitmap))
-            selectedImageBitmap = null
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
     }
