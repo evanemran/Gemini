@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import java.io.ByteArrayOutputStream
 
-class BitmapUtils {
+object BitmapUtils {
     fun compressBitmap(bitmap: Bitmap, maxImageSize: Int = 1024): Bitmap {
         val outputStream = ByteArrayOutputStream()
         val originalWidth = bitmap.width

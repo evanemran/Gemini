@@ -1,4 +1,4 @@
-package com.evanemran.gemini
+package com.evanemran.gemini.application
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -12,21 +12,20 @@ import android.text.SpannableString
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.evanemran.gemini.R
 import com.evanemran.gemini.adapters.MessageListAdapter
-import com.evanemran.gemini.config.BuildConfig
 import com.evanemran.gemini.config.ChatType
 import com.evanemran.gemini.databinding.ActivityMainBinding
+import com.evanemran.gemini.listeners.GeminiResponseListener
 import com.evanemran.gemini.model.MessageModel
 import com.evanemran.gemini.utils.BitmapUtils
 import com.evanemran.gemini.utils.CustomTypefaceSpan
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.content
+import com.evanemran.gemini.utils.GeminiPromptManager
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -34,26 +33,11 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_IMAGE_CAPTURE = 1
     private val REQUEST_IMAGE_PICK = 2
     private lateinit var binding: ActivityMainBinding
+    private lateinit var geminiPromptManager: GeminiPromptManager
     private var adapter: MessageListAdapter? = null
     var messageList: MutableList<MessageModel> = mutableListOf()
 
     private var selectedImageBitmap: Bitmap? = null
-
-    private val apiKey = BuildConfig().apiKey
-    private val generativeModel = GenerativeModel(
-        // Use a model that's applicable for your use case (see "Implement basic use cases" below)
-        modelName = "gemini-pro",
-        // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-        apiKey = apiKey
-    )
-
-    val generativeImageModel = GenerativeModel(
-        // For text-and-images input (multimodal), use the gemini-pro-vision model
-        modelName = "gemini-pro-vision",
-        // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-        apiKey = BuildConfig().apiKey
-    )
-//    val textView: TextView = findViewById(R.id.textView)
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +45,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        geminiPromptManager = GeminiPromptManager(this, geminiResponseListener)
 
         setSupportActionBar(binding.toolbar)
         val customTypeface: Typeface? =
@@ -85,13 +71,6 @@ class MainActivity : AppCompatActivity() {
         adapter = MessageListAdapter(this, messageList, ChatType.TEXT)
         binding.chatList.adapter = adapter
 
-        val chat = generativeModel.startChat(
-            history = listOf(
-                content(role = "user") { text("Hello, I am Evan. I am a software engineer") },
-                content(role = "model") { text("Great to meet you. What would you like to know?") }
-            )
-        )
-
         binding.commandLine.setOnTouchListener(OnTouchListener { _, event ->
             val DRAWABLE_RIGHT = 2
             if (event.action == MotionEvent.ACTION_UP) {
@@ -108,23 +87,15 @@ class MainActivity : AppCompatActivity() {
             val prompt = binding.commandLine.text.toString()
             if(prompt.isNotEmpty()) {
                 binding.commandLine.setText("")
-                adapter!!.notifyDataSetChanged()
                 binding.progressbar.visibility = View.VISIBLE
                 binding.run.visibility = View.GONE
                 lifecycleScope.launch {
 
                     if(selectedImageBitmap!=null) {
                         if(prompt.isNotEmpty()) {
-                            messageList.add(MessageModel(prompt, "NA", mIsReply = false, mIsImagePrompt = true, selectedImageBitmap!!))
                             binding.pickedImageView.visibility = View.GONE
-                            val inputContent = content {
-                                image(selectedImageBitmap!!)
-                                text(prompt)
-                            }
-
-                            val response = generativeImageModel.generateContent(inputContent)
-                            messageList.add(MessageModel(response.text.toString().trim(), "NA", mIsReply = true, mIsImagePrompt = true, selectedImageBitmap!!))
-                            selectedImageBitmap = null
+                            messageList.add(MessageModel(prompt, "NA", mIsReply = false, mIsImagePrompt = true, selectedImageBitmap!!))
+                            geminiPromptManager.askWithImage(prompt, selectedImageBitmap!!)
                         }
                         else {
                             binding.commandLine.error = "Enter Prompt."
@@ -132,12 +103,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     else {
                         messageList.add(MessageModel(prompt, "NA", mIsReply = false, mIsImagePrompt = false, null))
-                        val response = chat.sendMessage(prompt)
-                        messageList.add(MessageModel(response.text.toString().trim(), "NA", mIsReply = true, mIsImagePrompt = true, null))
-
-                        //For single thread chat
-                        //val response = generativeModel.generateContent(prompt)
-                        print(response.text)
+                        geminiPromptManager.askWithText(prompt)
                     }
 
                     binding.progressbar.visibility = View.GONE
@@ -170,9 +136,17 @@ class MainActivity : AppCompatActivity() {
                     val imageUri = data?.data
                     val imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
                     binding.pickedImageView.setImageBitmap(imageBitmap)
-                    selectedImageBitmap = BitmapUtils().compressBitmap(imageBitmap)
+                    selectedImageBitmap = BitmapUtils.compressBitmap(imageBitmap)
                 }
             }
         }
+    }
+
+    private val geminiResponseListener: GeminiResponseListener = object : GeminiResponseListener {
+        override fun onResponse(response: String, isImage: Boolean) {
+            messageList.add(MessageModel(response.trim(), "NA", mIsReply = true, mIsImagePrompt = isImage, selectedImageBitmap))
+            selectedImageBitmap = null
+        }
+
     }
 }

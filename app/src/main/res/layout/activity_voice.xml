@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="@color/black"
-    tools:context=".VoiceActivity">
+    tools:context=".application.VoiceActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

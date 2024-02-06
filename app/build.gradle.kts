@@ -50,4 +50,5 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
+    implementation ("com.airbnb.android:lottie:6.3.0")
 }

@@ -1,9 +1,7 @@
-package com.evanemran.gemini
+package com.evanemran.gemini.application
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.speech.RecognitionListener
-import android.speech.SpeechRecognizer
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
@@ -12,7 +10,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.evanemran.gemini.adapters.MessageListAdapter
 import com.evanemran.gemini.config.BuildConfig
 import com.evanemran.gemini.config.ChatType
-import com.evanemran.gemini.databinding.ActivityMainBinding
 import com.evanemran.gemini.databinding.ActivityVoiceBinding
 import com.evanemran.gemini.model.MessageModel
 import com.evanemran.gemini.utils.PermissionUtils
@@ -27,7 +24,7 @@ class VoiceActivity : AppCompatActivity() {
     private lateinit var binding: ActivityVoiceBinding
     var messageList: MutableList<MessageModel> = mutableListOf()
     private var adapter: MessageListAdapter? = null
-    private val apiKey = BuildConfig().apiKey
+    private val apiKey = BuildConfig.apiKey
     private val generativeModel = GenerativeModel(
         // Use a model that's applicable for your use case (see "Implement basic use cases" below)
         modelName = "gemini-pro",
