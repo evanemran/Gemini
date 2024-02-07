@@ -10,7 +10,7 @@ import com.google.ai.client.generativeai.type.content
 
 class GeminiPromptManager(private val activity: Context, private val responseListener: GeminiResponseListener) {
 
-    val apiKeyManager = ApiKeyManager(activity)
+    private val apiKeyManager = ApiKeyManager(activity)
 
     private val generativeModel = GenerativeModel(
         // Use a model that's applicable for your use case (see "Implement basic use cases" below)
