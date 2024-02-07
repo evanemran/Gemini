@@ -118,8 +118,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            drawerAdapter.notifyDataSetChanged()
-
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 

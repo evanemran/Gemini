@@ -14,6 +14,8 @@ import com.evanemran.gemini.model.DrawerMenu
 
 class DrawerAdapter (private val context: Context, private val list: List<DrawerMenu>, private val listener: ClickListener<DrawerMenu>, private val selectedNavMenu: DrawerMenu)
     : RecyclerView.Adapter<DrawerViewHolder>(){
+
+    private var selectedPos = getSelectedPos()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrawerViewHolder {
         val layout = LayoutInflater.from(context).inflate(R.layout.list_drawer, parent, false)
         return DrawerViewHolder(layout)
@@ -25,12 +27,10 @@ class DrawerAdapter (private val context: Context, private val list: List<Drawer
         holder.textView_title.text = item.title
         holder.textView_subTitle.text = item.subTitle
 
-        if(selectedNavMenu==item) {
-            holder.drawer_container.setBackgroundColor(context.getColor(R.color.primary))
-        }
-        else {
-            holder.drawer_container.setBackgroundColor(context.getColor(R.color.black))
-        }
+        holder.drawer_container.setBackgroundColor(
+                if (selectedPos == holder.adapterPosition) context.getColor(R.color.primary)
+                else context.getColor(R.color.black)
+                )
 
 
         holder.drawer_container.setOnClickListener {
@@ -39,13 +39,28 @@ class DrawerAdapter (private val context: Context, private val list: List<Drawer
             }
             else {
                 holder.drawer_container.setBackgroundColor(context.getColor(R.color.black))
-                listener.onClicked(item)
             }
+
+            listener.onClicked(item)
+            notifyItemChanged(selectedPos)
+            selectedPos = holder.adapterPosition
+            notifyItemChanged(selectedPos)
         }
     }
 
     override fun getItemCount(): Int {
         return list.size
+    }
+
+    private fun getSelectedPos(): Int {
+        list.forEachIndexed { index, element ->
+            if (element.title == selectedNavMenu.title){
+                selectedPos = index
+            }
+        }
+
+        return selectedPos
+
     }
 }
 
