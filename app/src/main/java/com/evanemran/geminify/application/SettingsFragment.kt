@@ -1,14 +1,16 @@
-package com.evanemran.gemini.application
+package com.evanemran.geminify.application
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.evanemran.gemini.databinding.FragmentSettingsBinding
-import com.evanemran.gemini.databinding.FragmentTextBinding
-import com.evanemran.gemini.utils.ApiKeyManager
+import com.evanemran.geminify.databinding.FragmentSettingsBinding
+import com.evanemran.geminify.utils.ApiKeyManager
 
 class SettingsFragment: Fragment() {
 
@@ -44,5 +46,14 @@ class SettingsFragment: Fragment() {
                 Toast.makeText(requireContext(), "Saved API Key", Toast.LENGTH_LONG).show()
             }
         }
+
+        binding.buttonGetApiKey.setOnClickListener {
+            openUrlInBrowser(requireContext(), "https://aistudio.google.com/app/apikey")
+        }
+    }
+
+    fun openUrlInBrowser(context: Context, url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
     }
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Gemini AI</string>
+    <string name="app_name">Geminify</string>
     <string name="enter_command">Enter Command...</string>
     <string name="enter_api_key">Enter API Key...</string>
     <string name="open_nav_drawer">Open</string>

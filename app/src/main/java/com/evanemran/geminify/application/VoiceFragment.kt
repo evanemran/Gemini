@@ -1,54 +1,59 @@
-package com.evanemran.gemini.application
+package com.evanemran.geminify.application
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.evanemran.gemini.adapters.MessageListAdapter
-import com.evanemran.gemini.config.BuildConfig
-import com.evanemran.gemini.config.ChatType
-import com.evanemran.gemini.databinding.ActivityVoiceBinding
-import com.evanemran.gemini.listeners.GeminiResponseListener
-import com.evanemran.gemini.model.MessageModel
-import com.evanemran.gemini.utils.GeminiPromptManager
-import com.evanemran.gemini.utils.PermissionUtils
-import com.evanemran.gemini.utils.SpeechToTextConverter
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.content
+import com.evanemran.geminify.adapters.MessageListAdapter
+import com.evanemran.geminify.config.ChatType
+import com.evanemran.geminify.databinding.ActivityVoiceBinding
+import com.evanemran.geminify.listeners.GeminiResponseListener
+import com.evanemran.geminify.model.MessageModel
+import com.evanemran.geminify.utils.GeminiPromptManager
+import com.evanemran.geminify.utils.PermissionUtils
+import com.evanemran.geminify.utils.SpeechToTextConverter
 import kotlinx.coroutines.launch
 
-class VoiceActivity : AppCompatActivity() {
+class VoiceFragment: Fragment() {
 
     private lateinit var speechToTextConverter: SpeechToTextConverter
     private lateinit var geminiPromptManager: GeminiPromptManager
     private lateinit var binding: ActivityVoiceBinding
     var messageList: MutableList<MessageModel> = mutableListOf()
     private var adapter: MessageListAdapter? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = ActivityVoiceBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        return binding.root
+    }
 
-        geminiPromptManager = GeminiPromptManager(this, geminiResponseListener)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        geminiPromptManager = GeminiPromptManager(requireContext(), geminiResponseListener)
 
         messageList.add(MessageModel("Hi! I am Gemini, How may I assist you?", "NA", mIsReply = false, mIsImagePrompt = false, null))
 
         binding.recyclerVoiceChat.setHasFixedSize(true)
         binding.recyclerVoiceChat.layoutManager = StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL)
-        adapter = MessageListAdapter(this, messageList, ChatType.VOICE)
+        adapter = MessageListAdapter(requireContext(), messageList, ChatType.VOICE)
         binding.recyclerVoiceChat.adapter = adapter
 
         PermissionUtils.requestPermission(
-            this,
+            requireActivity(),
             PermissionUtils.PERMISSION_RECORD_AUDIO,
-            "This app needs access to mic to read your voice."
+            "This App Needs Access to Mic to Read Your Voice."
         ) { // Callback when permission is granted
 
-            speechToTextConverter = SpeechToTextConverter(this)
+            speechToTextConverter = SpeechToTextConverter(requireActivity())
             speechToTextConverter.textToSpeech("Hello! This is a simulation of Text to Speech")
             speechToTextConverter.setOnTextRecognizedListener(object :
                 SpeechToTextConverter.OnTextRecognizedListener {
@@ -66,9 +71,6 @@ class VoiceActivity : AppCompatActivity() {
                 override fun onError() {
                     // Handle recognition error
                     binding.textViewListenStatus.visibility = View.GONE
-                    runOnUiThread {
-//                        binding.textToSpeech.text = "Error"
-                    }
                 }
             })
 
@@ -80,18 +82,6 @@ class VoiceActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        PermissionUtils.onRequestPermissionsResult(requestCode, grantResults) {
-            // Handle permission granting here
-            Toast.makeText(this, "Granted", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     private val geminiResponseListener: GeminiResponseListener = object : GeminiResponseListener {
         override fun onResponse(response: String, isImage: Boolean) {
             messageList.add(MessageModel(response.trim(), "NA", mIsReply = true, mIsImagePrompt = true, null))
@@ -100,5 +90,17 @@ class VoiceActivity : AppCompatActivity() {
             speechToTextConverter.textToSpeech(response.trim())
         }
 
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        PermissionUtils.onRequestPermissionsResult(requestCode, grantResults) {
+            // Handle permission granting here
+            Toast.makeText(requireContext(), "Granted", Toast.LENGTH_SHORT).show()
+        }
     }
 }

@@ -1,10 +1,8 @@
-package com.evanemran.gemini.utils
+package com.evanemran.geminify.utils
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
-import com.evanemran.gemini.config.BuildConfig
-import com.evanemran.gemini.listeners.GeminiResponseListener
+import com.evanemran.geminify.listeners.GeminiResponseListener
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 

@@ -1,4 +1,4 @@
-package com.evanemran.gemini.model
+package com.evanemran.geminify.model
 
 import android.graphics.Bitmap
 

@@ -1,9 +1,9 @@
-package com.evanemran.gemini.model
+package com.evanemran.geminify.model
 
 import androidx.fragment.app.Fragment
-import com.evanemran.gemini.application.SettingsFragment
-import com.evanemran.gemini.application.TextFragment
-import com.evanemran.gemini.application.VoiceFragment
+import com.evanemran.geminify.application.SettingsFragment
+import com.evanemran.geminify.application.TextFragment
+import com.evanemran.geminify.application.VoiceFragment
 
 enum class DrawerMenu(title: String, subTitle: String, fragment: Fragment) {
     TEXT("Text AI", "Chat with Gemini", TextFragment()),

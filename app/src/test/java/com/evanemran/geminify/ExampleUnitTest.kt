@@ -1,4 +1,4 @@
-package com.evanemran.gemini
+package com.evanemran.geminify
 
 import org.junit.Test
 

@@ -1,16 +1,15 @@
-package com.evanemran.gemini.adapters
+package com.evanemran.geminify.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.evanemran.gemini.R
-import com.evanemran.gemini.listeners.ClickListener
-import com.evanemran.gemini.model.DrawerMenu
+import com.evanemran.geminify.R
+import com.evanemran.geminify.listeners.ClickListener
+import com.evanemran.geminify.model.DrawerMenu
 
 class DrawerAdapter (private val context: Context, private val list: List<DrawerMenu>, private val listener: ClickListener<DrawerMenu>, private val selectedNavMenu: DrawerMenu)
     : RecyclerView.Adapter<DrawerViewHolder>(){

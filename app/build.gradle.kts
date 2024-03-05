@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.evanemran.gemini"
+    namespace = "com.evanemran.geminify"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.evanemran.gemini"
+        applicationId = "com.evanemran.geminify"
         minSdk = 28
         targetSdk = 34
         versionCode = 1

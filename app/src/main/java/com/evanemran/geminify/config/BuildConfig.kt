@@ -1,4 +1,4 @@
-package com.evanemran.gemini.config
+package com.evanemran.geminify.config
 
 object BuildConfig {
     var apiKey = "Your API Key"

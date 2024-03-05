@@ -1,4 +1,4 @@
-package com.evanemran.gemini.utils
+package com.evanemran.geminify.utils
 
 import android.content.Context
 import android.content.SharedPreferences

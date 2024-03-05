@@ -1,4 +1,4 @@
-package com.evanemran.gemini.config
+package com.evanemran.geminify.config
 
 enum class ChatType {
     TEXT,

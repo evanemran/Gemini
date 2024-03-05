@@ -1,4 +1,4 @@
-package com.evanemran.gemini
+package com.evanemran.geminify
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

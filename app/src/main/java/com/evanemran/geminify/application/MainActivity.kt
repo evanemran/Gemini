@@ -1,45 +1,31 @@
-package com.evanemran.gemini.application
+package com.evanemran.geminify.application
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.Spannable
 import android.text.SpannableString
-import android.view.MotionEvent
-import android.view.View
-import android.view.View.OnTouchListener
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.evanemran.gemini.R
-import com.evanemran.gemini.adapters.DrawerAdapter
-import com.evanemran.gemini.adapters.MessageListAdapter
-import com.evanemran.gemini.config.ChatType
-import com.evanemran.gemini.databinding.ActivityMainBinding
-import com.evanemran.gemini.listeners.ClickListener
-import com.evanemran.gemini.listeners.GeminiResponseListener
-import com.evanemran.gemini.model.DrawerMenu
-import com.evanemran.gemini.model.MessageModel
-import com.evanemran.gemini.utils.BitmapUtils
-import com.evanemran.gemini.utils.CustomTypefaceSpan
-import com.evanemran.gemini.utils.GeminiPromptManager
-import kotlinx.coroutines.launch
+import com.evanemran.geminify.R
+import com.evanemran.geminify.adapters.DrawerAdapter
+import com.evanemran.geminify.databinding.ActivityMainBinding
+import com.evanemran.geminify.listeners.ClickListener
+import com.evanemran.geminify.model.DrawerMenu
+import com.evanemran.geminify.utils.ApiKeyManager
+import com.evanemran.geminify.utils.CustomTypefaceSpan
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerAdapter: DrawerAdapter
-    private var selectedDrawerMenu: DrawerMenu = DrawerMenu.TEXT
+    private lateinit var selectedDrawerMenu: DrawerMenu
+    private lateinit var apiKeyManager: ApiKeyManager
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +34,15 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        apiKeyManager = ApiKeyManager(this)
+        selectedDrawerMenu = apiKeyManager.apiKey.let {
+            if(it.isNullOrEmpty()) {
+                return@let DrawerMenu.API_KEY
+            }
+            else {
+                return@let DrawerMenu.TEXT
+            }
+        }
         replaceFragment(selectedDrawerMenu.fragment)
 
         setSupportActionBar(binding.toolbar)
@@ -99,15 +94,31 @@ class MainActivity : AppCompatActivity() {
         override fun onClicked(data: DrawerMenu) {
             when (data) {
                 DrawerMenu.TEXT -> {
-                    if (selectedDrawerMenu.fragment !is TextFragment){
-                        selectedDrawerMenu = DrawerMenu.TEXT
-                        replaceFragment(TextFragment())
+                    apiKeyManager.apiKey.let {
+                        if(it.isNullOrEmpty()) {
+                            Toast.makeText(this@MainActivity, "Add API Key First!", Toast.LENGTH_SHORT).show()
+                            return
+                        }
+                        else {
+                            if (selectedDrawerMenu.fragment !is TextFragment){
+                                selectedDrawerMenu = DrawerMenu.TEXT
+                                replaceFragment(TextFragment())
+                            }
+                        }
                     }
                 }
                 DrawerMenu.VOICE -> {
-                    if (selectedDrawerMenu.fragment !is VoiceFragment){
-                        selectedDrawerMenu = DrawerMenu.VOICE
-                        replaceFragment(VoiceFragment())
+                    apiKeyManager.apiKey.let {
+                        if(it.isNullOrEmpty()) {
+                            Toast.makeText(this@MainActivity, "Add API Key First!", Toast.LENGTH_SHORT).show()
+                            return
+                        }
+                        else {
+                            if (selectedDrawerMenu.fragment !is VoiceFragment){
+                                selectedDrawerMenu = DrawerMenu.VOICE
+                                replaceFragment(VoiceFragment())
+                            }
+                        }
                     }
                 }
                 DrawerMenu.API_KEY -> {

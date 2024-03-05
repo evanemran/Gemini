@@ -1,4 +1,4 @@
-package com.evanemran.gemini.utils
+package com.evanemran.geminify.utils
 
 import android.app.Activity
 import android.app.AlertDialog

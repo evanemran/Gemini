@@ -1,4 +1,4 @@
-package com.evanemran.gemini.utils
+package com.evanemran.geminify.utils
 
 import android.graphics.Paint
 import android.graphics.Typeface

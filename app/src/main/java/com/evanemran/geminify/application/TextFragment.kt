@@ -1,4 +1,4 @@
-package com.evanemran.gemini.application
+package com.evanemran.geminify.application
 
 import android.app.Activity
 import android.content.Intent
@@ -13,14 +13,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.evanemran.gemini.adapters.MessageListAdapter
-import com.evanemran.gemini.config.BuildConfig
-import com.evanemran.gemini.config.ChatType
-import com.evanemran.gemini.databinding.FragmentTextBinding
-import com.evanemran.gemini.listeners.GeminiResponseListener
-import com.evanemran.gemini.model.MessageModel
-import com.evanemran.gemini.utils.BitmapUtils
-import com.evanemran.gemini.utils.GeminiPromptManager
+import com.evanemran.geminify.adapters.MessageListAdapter
+import com.evanemran.geminify.config.BuildConfig
+import com.evanemran.geminify.config.ChatType
+import com.evanemran.geminify.databinding.FragmentTextBinding
+import com.evanemran.geminify.listeners.GeminiResponseListener
+import com.evanemran.geminify.model.MessageModel
+import com.evanemran.geminify.utils.BitmapUtils
+import com.evanemran.geminify.utils.GeminiPromptManager
 import kotlinx.coroutines.launch
 
 class TextFragment: Fragment() {

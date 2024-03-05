@@ -1,4 +1,4 @@
-package com.evanemran.gemini.adapters
+package com.evanemran.geminify.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,10 +8,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Recycler
-import com.evanemran.gemini.R
-import com.evanemran.gemini.config.ChatType
-import com.evanemran.gemini.model.MessageModel
+import com.evanemran.geminify.R
+import com.evanemran.geminify.config.ChatType
+import com.evanemran.geminify.model.MessageModel
 
 class MessageListAdapter(private val context: Context, private val list: List<MessageModel>, private val type: ChatType)
     : RecyclerView.Adapter<RecyclerView.ViewHolder> (){
